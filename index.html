@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG渲染器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+        .svg-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 90%;
+            max-height: 90vh;
+            overflow: auto;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="svg-container" id="svgContainer">
+        <p>SVG将显示在这里...</p>
+    </div>
+
+    <script>
+        // 解析URL参数
+        function getParameterByName(name) {
+            const url = window.location.href;
+            name = name.replace(/[\[\]]/g, '\\$&');
+            const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+            const results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+        // 当页面加载时
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('svgContainer');
+            
+            // 尝试从URL参数获取SVG数据
+            const svgData = getParameterByName('data');
+            
+            if (svgData) {
+                try {
+                    // 解码Base64编码的SVG
+                    const decodedSvg = atob(svgData);
+                    // 设置SVG内容
+                    container.innerHTML = decodedSvg;
+                } catch (e) {
+                    container.innerHTML = '<div class="error">无法解析SVG数据。错误: ' + e.message + '</div>';
+                }
+            } else {
+                container.innerHTML = '<div class="error">未提供SVG数据。请添加?data=BASE64_ENCODED_SVG参数</div>';
+            }
+        });
+    </script>
+</body>
+</html>
